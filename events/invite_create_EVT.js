@@ -20,7 +20,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function inviteCreateOnReady(...params) {
       Bot.bot.on('inviteCreate', DBM.Events.inviteCreate);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

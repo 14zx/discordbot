@@ -23,7 +23,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function messageDeleteBulkOnReady(...params) {
       Bot.bot.on('messageDeleteBulk', DBM.Events.messageDeleteBulk);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

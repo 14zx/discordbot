@@ -26,7 +26,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function memberStopStreamingOnReady(...params) {
       Bot.bot.on('voiceStateUpdate', DBM.Events.offStream);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

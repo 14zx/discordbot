@@ -29,7 +29,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function memberMoveVoiceChannelOnReady(...params) {
       Bot.bot.on('voiceStateUpdate', DBM.Events.memberMoveVoiceChannel);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

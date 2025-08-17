@@ -75,7 +75,7 @@ module.exports = {
     const { onReady } = DBM.Bot;
     DBM.Bot.onReady = function cronSchedulerOnReady(...params) {
       cronScheduler.setupCrons();
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };
