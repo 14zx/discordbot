@@ -19,7 +19,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function inviteDeleteOnReady(...params) {
       Bot.bot.on('inviteDelete', DBM.Events.inviteDelete);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

@@ -29,7 +29,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function memberRoleRemovedOnReady(...params) {
       Bot.bot.on('guildMemberUpdate', DBM.Events.roleRemoved);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

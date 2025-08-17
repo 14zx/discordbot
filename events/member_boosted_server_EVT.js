@@ -24,7 +24,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function boostedGuildOnReady(...params) {
       Bot.bot.on('guildMemberUpdate', DBM.Events.boostedGuild);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

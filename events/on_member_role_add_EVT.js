@@ -30,7 +30,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function memberRoleAddOnReady(...params) {
       Bot.bot.on('guildMemberUpdate', DBM.Events.roleAdded);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

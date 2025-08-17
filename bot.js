@@ -50,10 +50,11 @@ Bot.setupBot = function() {
 };
 
 Bot.onRawData = function(packet) {
-	if(packet.t !== "MESSAGE_REACTION_ADD" || packet.t !== "MESSAGE_REACTION_REMOVE") return;
+	if(packet.t !== "MESSAGE_REACTION_ADD" && packet.t !== "MESSAGE_REACTION_REMOVE") return;
 
 	const client = Bot.bot;
 	const channel = client.channels.cache.get(packet.d.channel_id);
+	if(!channel || !channel.messages) return;
 	if(channel.messages.cache.has(packet.d.message_id)) return;
 
 	channel.messages.fetch(packet.d.message_id).then(function(message) {
@@ -65,7 +66,7 @@ Bot.onRawData = function(packet) {
 		if (packet.t === "MESSAGE_REACTION_REMOVE") {
 			client.emit("messageReactionRemove", reaction, client.users.cache.get(packet.d.user_id));
 		}
-	});
+	}).catch(function(){});
 };
 
 Bot.reformatData = function() {
@@ -285,6 +286,10 @@ Actions.getLocalFile = function(url) {
 
 Actions.getDBM = function() {
 	return DBM;
+};
+
+Actions.getMods = function() {
+	return { require: require };
 };
 
 Actions.callListFunc = function(list, funcName, args) {
@@ -767,7 +772,7 @@ Actions.getVoiceChannel = function(type, varName, cache) {
 			if(msg && msg.mentions) {
 				const member = msg.mentions.members.first();
 				if(member) {
-					return msg.member.voice && msg.member.voice.channel;
+					return member.voice && member.voice.channel;
 				}
 			}
 			break;
@@ -1038,7 +1043,7 @@ Events.onReaction = function(id, reaction, user) {
 	if(!events) return;
 	if(!reaction.message || !reaction.message.guild) return;
 	const server = reaction.message.guild;
-	const member = server.member(user);
+	const member = server.members.cache.get(user.id);
 	if(!member) return;
 	for(let i = 0; i < events.length; i++) {
 		const event = events[i];
@@ -1054,7 +1059,7 @@ Events.onTyping = function(id, channel, user) {
 	if(!events) return;
 	if(!channel.guild) return;
 	const server = channel.guild;
-	const member = server.member(user);
+	const member = server.members.cache.get(user.id);
 	if(!member) return;
 	for(let i = 0; i < events.length; i++) {
 		const event = events[i];
@@ -1165,7 +1170,7 @@ Files.readData = function(callback) {
 	let cur = 0;
 	for(let i = 0; i < max; i++) {
 		const filePath = path.join(process.cwd(), "data", this.dataFiles[i]);
-		if(!fs.existsSync(filePath)) continue;
+		if(!fs.existsSync(filePath)) { if(++cur === max) { callback(); } continue; }
 		fs.readFile(filePath, function(error, content) {
 			const filename = this.dataFiles[i].slice(0, -5);
 			let data;
@@ -1344,7 +1349,7 @@ Files.restoreMember = function(value, bot) {
 	const split = value.split("_");
 	const memId = split[0].slice(4);
 	const serverId = split[1].slice(2);
-	const server = bot.guilds.get(serverId);
+	const server = bot.guilds.cache.get(serverId);
 	if(server && server.members && server.members.cache) {
 		const member = server.members.cache.get(memId);
 		return member;
@@ -1664,6 +1669,20 @@ Structures.extend("Guild", (Guild) => class extends Guild {
 				}
 			});
 		}
+		return channel;
+	}
+
+	getDefaultVoiceChannel() {
+		let channel = null;
+		this.channels.cache.array().forEach(function(c) {
+			if(c.type === "voice") {
+				if(!channel) {
+					channel = c;
+				} else if(channel.position > c.position) {
+					channel = c;
+				}
+			}
+		});
 		return channel;
 	}
 

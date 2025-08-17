@@ -26,7 +26,7 @@ module.exports = {
     const { onReady } = DBM.Bot;
     Bot.onReady = function messageReactionRemovedOnReady(...params) {
       Bot.bot.on('messageReactionRemove', DBM.Events.reactionRemoved);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

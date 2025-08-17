@@ -21,7 +21,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function userUpdateOnReady(...params) {
       Bot.bot.on('userUpdate', DBM.Events.callUserUpdate);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

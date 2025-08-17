@@ -24,7 +24,7 @@ module.exports = {
     const { onReady } = Bot;
     Bot.onReady = function memberNicknameChangedOnReady(...params) {
       Bot.bot.on('guildMemberUpdate', DBM.Events.nicknameChanged);
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };

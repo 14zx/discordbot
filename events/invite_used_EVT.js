@@ -14,6 +14,7 @@ module.exports = {
       if (server.me.hasPermission('MANAGE_GUILD')) {
         server.fetchInvites().then((invites) => {
           const prior = guildInvites[server.id];
+          if (!prior) return;
           const used = prior.filter((c) => c.uses < invites.get(c.code).uses).first();
           if (!used) return;
           for (const event of Bot.$evts['Invite Used']) {
@@ -27,34 +28,33 @@ module.exports = {
     };
     const { onReady } = Bot;
     Bot.onReady = function inviteUsedOnReady(...params) {
-      // To not over-consume memory.
       if (Bot.$evts['Invite Used']) {
         setTimeout(() => {
           Bot.bot.guilds.cache.forEach((g) => {
-            if (g.me.hasPermission('MANAGE_GUILD')) {
+            if (g.me && g.me.hasPermission && g.me.hasPermission('MANAGE_GUILD')) {
               g.fetchInvites().then((invites) => {
                 guildInvites[g.id] = invites;
-              });
+              }).catch(() => {});
             }
           });
         }, 1000);
         Bot.bot.on('guildMemberAdd', DBM.Events.inviteUsed);
         Bot.bot.on('inviteDelete', (inv) => {
-          if (inv.guild.me.hasPermission('MANAGE_GUILD')) {
+          if (inv.guild && inv.guild.me && inv.guild.me.hasPermission && inv.guild.me.hasPermission('MANAGE_GUILD')) {
             inv.guild.fetchInvites().then((invites) => {
               guildInvites[inv.guild.id] = invites;
-            });
+            }).catch(() => {});
           }
         });
         Bot.bot.on('inviteCreate', (inv) => {
-          if (inv.guild.me.hasPermission('MANAGE_GUILD')) {
+          if (inv.guild && inv.guild.me && inv.guild.me.hasPermission && inv.guild.me.hasPermission('MANAGE_GUILD')) {
             inv.guild.fetchInvites().then((invites) => {
               guildInvites[inv.guild.id] = invites;
-            });
+            }).catch(() => {});
           }
         });
       }
-      onReady.apply(this, ...params);
+      onReady.apply(this, params);
     };
   },
 };
